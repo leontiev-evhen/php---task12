@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 
 class Sql
@@ -11,71 +11,70 @@ class Sql
     protected $from;
     protected $values;
     protected $set;
-    protected $dbh;
-    protected $valueWhere;
+    protected $where;
 
-    public function __construct($db)
+
+    protected function select ($fields = '')
     {
-        $this->dbh = $db;
-    }
-
-
-    public function select ($fields)
-    {
-        if ($this->checkArray($fields))
+        if (empty($fields))
         {
-            if (in_array("*", $fields))
-            {
-                throw new Exception('Forbidden character');
-            }
-
-            $this->select = 'SELECT '.implode(', ', $fields).' FROM ';
-            return $this;
+            $fields = '*';
         }
+        else
+        {
+            if ($this->checkArray($fields))
+            {
+                $fields = implode(', ', $fields);
+            }
+        }
+
+        $this->select = 'SELECT '.$fields.' FROM ';
+        return $this;
+
     }
 
-    public function insert ()
+    protected function insert ()
     {
         $this->insert = 'INSERT INTO ';
         return $this;
     }
 
-    public function update ()
+    protected function update ()
     {
         $this->update = 'UPDATE ';
         return $this;
     }
 
-    public function delete ()
+    protected function delete ()
     {
         $this->delete = 'DELETE FROM ';
         return $this;
     }
 
-    public function from ($table, $alias = ' ')
+    protected function from ($table)
     {
-       $this->from = $table.$alias;
-       return $this;
+        if ($this->checkIssetField($table))
+        {
+            $this->from = $table;
+            return $this;
+        }
     }
 
-    public function where ($condition)
+    protected function where ($condition)
     {
-        $this->where = ' WHERE `'.$condition.'` = :value';
-        return $this;
+        if ($this->checkIssetField($condition))
+        {
+            $this->where = ' WHERE '.key($condition).' = '.$condition[key($condition)];
+            return $this;
+        }
     }
 
-    public function valueWhere ($value)
+    protected function set ($fields)
     {
-        $this->valueWhere = $value;
-        return $this;
-    }
-
-    public function set ($fields)
-    {
-        if ($this->checkArray($fields))
+        if ($this->checkArray($fields) && $this->checkIssetField($fields))
         {
             foreach($fields as $key=>$val) {
-                $arr[] = $key.' = '.':'.$val;
+                $arr[] = $key.' = '.$val;
             }
 
             $this->set = ' SET '.implode(' , ', $arr);
@@ -83,18 +82,27 @@ class Sql
         }
     }
 
-    public function values ($set)
+    protected function values ($set)
     {
-        if ($this->checkArray($set))
+        if ($this->checkArray($set) && $this->checkIssetField($set))
         {
             foreach ($set as $key=>$value) {
-                $aSet[$key] = $this->quoteSimpleColumnName($value);
+                $aSet[$key] = $value;
             }
 
             $key    = array_keys($aSet);
             $values = array_values($aSet);
+
             $this->values = ' ('.implode(', ', $key).') VALUES ('.implode(', ', $values).')';
             return $this;
+        }
+    }
+
+    protected function getColumsName ($table)
+    {
+        if ($this->checkIssetField($table))
+        {
+            return 'SHOW COLUMNS FROM '.$table;
         }
     }
 
@@ -109,12 +117,24 @@ class Sql
         }
     }
 
+    protected function checkIssetField ($field)
+    {
+        if (empty($field))
+        {
+            throw new Exception('Field can not be empty in the function: '.debug_backtrace()[1]['function'].'($arg)');
+        }
+        else
+        {
+            return true;
+        }
+    }
+
     protected function quoteSimpleColumnName ($name)
     {
         return strpos($name, "'") !== false ? $name : "'" . $name . "'";
     }
 
-    public function execute()
+    protected function execute()
     {
         switch ($this)
         {
@@ -122,12 +142,7 @@ class Sql
                 return $this->insert.$this->from.$this->values;
 
             case !empty($this->select):
-
-                $STH = $this->dbh->prepare($this->select.$this->from.$this->values.$this->where);
-                $STH->bindParam(':value', $this->valueWhere);
-                $STH->execute();
-                $result = $STH->fetchAll(PDO::FETCH_ASSOC);
-                return $result;
+                return $this->select.$this->from.$this->values.$this->where;
 
             case !empty($this->update):
                 return $this->update.$this->from.$this->set.$this->where;

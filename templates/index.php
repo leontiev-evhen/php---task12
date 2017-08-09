@@ -5,7 +5,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-        <title>Course PHP -  Task 10</title>
+        <title>Course PHP -  Task 12</title>
 
         <!-- Bootstrap -->
         <link href="<?php echo PATH;?>css/bootstrap.min.css" rel="stylesheet">
@@ -34,7 +34,45 @@
 
             <?php } ?>
             <div class="row">
-
+                <div class="col-md-6">
+                    <h3>MySql</h3>
+                    <?php 
+                    if (!empty($resultMysql)) 
+                    {
+                        if (is_array($resultMysql))
+                        {
+                            foreach ($resultMysql[0] as $key=>$item)
+                            {
+                                echo $key.' => '.$item.'<br>';
+                            }
+                        }
+                        else
+                        {
+                            echo $resultMysql;
+                        }
+                    }
+                    ?>
+                </div>
+                <div class="col-md-6">
+                    <h3>PostgreSql</h3>
+                    <?php
+                    if (!empty($resultPostgreSql))
+                    {
+                        if (is_array($resultPostgreSql))
+                        {
+                            foreach ($resultPostgreSql[0] as $key=>$item)
+                            {
+                                echo $key.' => '.$item.'<br>';
+                            }
+                        }
+                        else
+                        {
+                            echo $resultPostgreSql;
+                        }
+                    }
+                    ?>
+                </div>
+                <?php ?>
             </div>
 
         </div>

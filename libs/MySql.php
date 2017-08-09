@@ -1,25 +1,42 @@
 <?php
 
-/**
- * Created by PhpStorm.
- * User: yevhen
- * Date: 07.08.17
- * Time: 12:41
- */
 class MySql extends Db
 {
+    private $connect;
+
     public function __construct ()
     {
-        if ($connect = mysqli_connect(HOST, USER, PASSWORD_SQL, DB))
+        if ($this->connect = new PDO('mysql:host='.HOST.';dbname='.DB, USER, PASSWORD_SQL))
         {
-            parent::__construct($connect);
+            parent::__construct($this->connect);
         }
         else
         {
             throw new Exception('Could not connect');
         }
     }
-    
+
+    public function selectPdo ($table, $params)
+    {
+        return parent::selectPdo($this->quoteSimpleTableName($table), $this->quoteSimpleColumnsName($params));
+    }
+
+    public function insertPdo ($table, $params)
+    {
+        return parent::insertPdo($this->quoteSimpleTableName($table), $this->quoteSimpleColumnsName($params));
+    }
+
+    public function updatePdo ($table, $params, $condition)
+    {
+        return parent::updatePdo($this->quoteSimpleTableName($table), $this->quoteSimpleColumnsName($params), $this->quoteSimpleColumnsName($condition));
+    }
+
+    public function deletePdo ($table, $params)
+    {
+        return parent::deletePdo($this->quoteSimpleTableName($table), $this->quoteSimpleColumnsName($params));
+    }
+
+
     private function quoteSimpleTableName ($name)
     {
         return strpos($name, '`') !== false ? $name : '`' . $name . '`';
@@ -34,4 +51,8 @@ class MySql extends Db
         }
         return $aFields;
     }
+
+
+
 }
+?>
