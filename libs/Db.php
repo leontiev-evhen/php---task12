@@ -18,11 +18,11 @@ class Db extends Sql
         $this->dbh = $db;
     }
 
-    public function selectPdo ($table, $params)
+    public function selectPdo ($table, $arrSelect, $params)
     {
         $this->params($params);
 
-        $sql = parent::select()->from($table)->where($this->aParams)->execute();
+        $sql = parent::select($arrSelect)->from($table)->where($this->aParams)->execute();
 
         $STH = $this->dbh->prepare($sql);
 

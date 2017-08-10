@@ -21,9 +21,9 @@ class PostgreSql extends Db
         }
     }
 
-    public function selectPdo ($table, $params)
+    public function selectPdo ($table, $arrSelect, $params)
     {
-        return parent::selectPdo($this->quoteSimpleTableName($table), $params);
+        return parent::selectPdo($this->quoteSimpleTableName($table), $arrSelect, $params);
     }
 
     public function insertPdo ($table, $params)

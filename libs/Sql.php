@@ -16,20 +16,17 @@ class Sql
 
     protected function select ($fields = '')
     {
-        if (empty($fields))
-        {
-            $fields = '*';
-        }
-        else
-        {
-            if ($this->checkArray($fields))
-            {
-                $fields = implode(', ', $fields);
-            }
-        }
+        if ($this->checkArray($fields)) {
 
-        $this->select = 'SELECT '.$fields.' FROM ';
-        return $this;
+            if (in_array("*", $fields)) {
+                throw new Exception('Forbidden character');
+            }
+
+            $fields = implode(', ', $fields);
+
+            $this->select = 'SELECT ' . $fields . ' FROM ';
+            return $this;
+        }
 
     }
 

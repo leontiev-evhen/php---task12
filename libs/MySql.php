@@ -16,9 +16,9 @@ class MySql extends Db
         }
     }
 
-    public function selectPdo ($table, $params)
+    public function selectPdo ($table, $arrSelect, $params)
     {
-        return parent::selectPdo($this->quoteSimpleTableName($table), $this->quoteSimpleColumnsName($params));
+        return parent::selectPdo($this->quoteSimpleTableName($table), $arrSelect, $this->quoteSimpleColumnsName($params));
     }
 
     public function insertPdo ($table, $params)

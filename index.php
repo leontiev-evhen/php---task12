@@ -8,9 +8,10 @@ try
 {
     /*============ select ===================*/
 
+    $arrSelect = ['data'];
     $params = ['key' => 'user11'];
-    $resultMysql = (new MySql())->selectPdo('MY_TEST', $params);
-    $resultPostgreSql = (new PostgreSql())->selectPdo('PG_TEST', $params);
+    $resultMysql = (new MySql())->selectPdo('MY_TEST', $arrSelect, $params);
+    $resultPostgreSql = (new PostgreSql())->selectPdo('PG_TEST', $arrSelect, $params);
 
 
     /*============ insert ===================*/
